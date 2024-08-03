@@ -1,15 +1,16 @@
-from __init__ import db
+from routes import db
 
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), nullable=False)
-    phone_number = db.Column(db.String(20), unique=True, nullable=False)
+    phone_number = db.Column(db.String(10), unique=True, nullable=False)
     password = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(128), unique=True, nullable=False)
     city = db.Column(db.String(128), nullable=True)
     country = db.Column(db.String(128), nullable=True)
     verified = db.Column(db.Boolean, default=False)
+    otp = db.Column(db.String(6), nullable=True)
 
 
 class Contact(db.Model):

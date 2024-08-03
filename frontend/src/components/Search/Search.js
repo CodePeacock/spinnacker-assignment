@@ -17,18 +17,26 @@ const Search = () => {
     };
 
     return (
-        <div>
-            <form onSubmit={handleSearch}>
-                <input type="text" placeholder="Search by name or phone" value={query} onChange={(e) => setQuery(e.target.value)} />
-                <button type="submit">Search</button>
+        <div className="search-container">
+            <form onSubmit={handleSearch} className="search-form">
+                <input
+                    type="text"
+                    placeholder="Search by name or phone"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    className="search-input"
+                />
+                <button type="submit" className="search-button">Search</button>
             </form>
-            <ul>
+            <div className="results-container">
                 {results.map((result) => (
-                    <li key={result.phone_number}>
-                        {result.name} - {result.phone_number} (Spam Likelihood: {result.spam_likelihood})
-                    </li>
+                    <div key={result.phone_number} className="result-card">
+                        <h3>{result.name}</h3>
+                        <p>Phone: {result.phone_number}</p>
+                        <p>Spam Likelihood: {result.spam_likelihood}</p>
+                    </div>
                 ))}
-            </ul>
+            </div>
         </div>
     );
 };

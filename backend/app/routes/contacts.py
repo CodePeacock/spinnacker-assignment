@@ -1,7 +1,6 @@
-from __init__ import db
 from flask import Blueprint, jsonify, request
-
 from models import Contact, User
+from routes import db
 
 contacts_bp = Blueprint("contacts", __name__)
 
@@ -9,6 +8,7 @@ contacts_bp = Blueprint("contacts", __name__)
 @contacts_bp.route("/add", methods=["POST"])
 def add_contact():
     data = request.json
+    print(data)
     if user := User.query.get(data["user_id"]):
         contact = Contact(
             name=data["name"], phone_number=data["phone_number"], user_id=user.id

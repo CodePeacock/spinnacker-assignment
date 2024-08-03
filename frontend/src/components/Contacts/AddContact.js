@@ -2,36 +2,32 @@ import React, { useState } from 'react';
 import { addContact } from '../../services/api';
 
 const AddContact = () => {
-    const [formData, setFormData] = useState({
+    const [contactData, setContactData] = useState({
         name: '',
-        phone_number: '',
+        phone_number: ''
     });
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleAddContact = async () => {
         try {
-            await addContact({ ...formData, user_id: localStorage.getItem('user_id') });
-            alert('Contact added successfully');
+            const user_id = localStorage.getItem('user_id');
+            const response = await addContact({ ...contactData, user_id });
+            alert(response.data.message);
         } catch (error) {
-            alert('Error adding contact');
+            alert(error.response.data.message);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <input type="text" name="name" placeholder="Name" onChange={handleChange} required />
-            <input type="text" name="phone_number" placeholder="Phone Number" onChange={handleChange} required />
-            <button type="submit">Add Contact</button>
-        </form>
+        <div className='div-container'>
+            <form onSubmit={handleAddContact} className='form'>
+                <center><h2>Add Contact</h2></center>
+                <input type="text" placeholder="Name" value={contactData.name} onChange={e => setContactData({ ...contactData, name: e.target.value })} />
+                <input type="text" placeholder="Phone Number" value={contactData.phone_number} onChange={e => setContactData({ ...contactData, phone_number: e.target.value })} />
+                <center><button onClick={handleAddContact}>Add Contact</button></center>
+            </form>
+        </div>
     );
 };
 
 export default AddContact;
+

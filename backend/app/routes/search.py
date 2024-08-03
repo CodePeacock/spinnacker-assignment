@@ -1,7 +1,6 @@
 from flask import Blueprint, jsonify, request
-from sqlalchemy import or_
-
 from models import Contact, SpamLikelihood, User
+from sqlalchemy import or_
 
 search_bp = Blueprint("search", __name__)
 
@@ -9,9 +8,15 @@ search_bp = Blueprint("search", __name__)
 @search_bp.route("/by_name", methods=["GET"])
 def search_by_name():
     query = request.args.get("query")
-    results = User.query.filter(
-        or_(User.name.like(f"{query}%"), User.name.like(f"%{query}%"))
-    ).all()
+    results = (
+        User.query.filter(
+            or_(User.name.like(f"{query}%"), User.name.like(f"%{query}%"))
+        )
+        .order_by(
+            User.name.like(f"{query}%").desc(), User.name.like(f"%{query}%").desc()
+        )
+        .all()
+    )
     return jsonify(
         [
             {
@@ -29,7 +34,14 @@ def search_by_name():
 @search_bp.route("/by_phone", methods=["GET"])
 def search_by_phone():
     query = request.args.get("query")
-    results = Contact.query.filter(Contact.phone_number.like(f"%{query}%")).all()
+    results = (
+        Contact.query.filter(Contact.phone_number.like(f"%{query}%"))
+        .order_by(
+            Contact.phone_number.like(f"{query}%").desc(),
+            Contact.phone_number.like(f"%{query}%").desc(),
+        )
+        .all()
+    )
     return jsonify(
         [
             {

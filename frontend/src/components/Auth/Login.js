@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../../services/api';
 
 const Login = () => {
@@ -6,6 +7,7 @@ const Login = () => {
         email: '',
         password: '',
     });
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -21,17 +23,22 @@ const Login = () => {
             const response = await loginUser(formData);
             alert('Login successful');
             localStorage.setItem('user_id', response.data.user_id);
+            navigate('/');
+            window.location.reload(); // Reload to update the navbar
         } catch (error) {
             alert('Error logging in');
         }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <input type="email" name="email" placeholder="Email" onChange={handleChange} required />
-            <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
-            <button type="submit">Login</button>
-        </form>
+        <div className='div-container'>
+            <form onSubmit={handleSubmit} className='form'>
+                <center><h1>Login Page</h1></center>
+                <input type="email" name="email" placeholder="Email" onChange={handleChange} required className='form input' autoComplete='email' />
+                <input type="password" name="password" placeholder="Password" onChange={handleChange} required className='form input' />
+                <button type="submit" className='form-button'> Login</button>
+            </form>
+        </div>
     );
 };
 

@@ -1,9 +1,8 @@
 from flask import Blueprint
-
-from auth import auth_bp
-from contacts import contacts_bp
-from search import search_bp
-from spam import spam_bp
+from routes.auth import auth_bp
+from routes.contacts import contacts_bp
+from routes.search import search_bp
+from routes.spam import spam_bp
 
 main_bp = Blueprint("main", __name__)
 

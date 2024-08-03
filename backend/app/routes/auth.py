@@ -1,13 +1,25 @@
+"""
+This file contains the routes for user registration, email verification, and login.
+
+Functions:
+    register: Registers a new user in the database.
+    verify: Verifies the user's email using an OTP.
+    login: Logs in a user if the credentials are valid and the account is verified.
+    send_otp: Sends an OTP to the user's email for verification.
+    _auth_send_otp_email: Sends the OTP email using the SMTP server.
+"""
+
 import hashlib
 import os
 import smtplib
+from datetime import datetime, timedelta, timezone
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from __init__ import db
 from flask import Blueprint, jsonify, request
 from models import User
 from otp import generate_otp
+from routes import db
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -26,7 +38,13 @@ def register():
     )
     db.session.add(user)
     db.session.commit()
-    send_otp(user.email)
+
+    # Generate and send OTP
+    otp = send_otp(user.email)
+    user.otp = otp
+    user.otp_expiration = datetime.now(timezone.utc) + timedelta(minutes=10)
+    db.session.commit()
+
     return jsonify(
         {"message": "User registered successfully. Please verify your email."}
     ), 201
@@ -36,11 +54,12 @@ def register():
 def verify():
     data = request.json
     user = User.query.filter_by(email=data["email"]).first()
-    if user and data["otp"] == "123456":  # Simplified for example
+    if user and user.otp == data["otp"]:
         user.verified = True
+        user.otp = None  # Clear OTP after verification
         db.session.commit()
-        return jsonify({"message": "User verified successfully."}), 200
-    return jsonify({"message": "Invalid OTP."}), 400
+        return jsonify({"success": True, "message": "User verified successfully."}), 200
+    return jsonify({"success": False, "message": "Invalid OTP."}), 400
 
 
 @auth_bp.route("/login", methods=["POST"])
@@ -106,7 +125,6 @@ def _auth_send_otp_email(sender_email, sender_password, msg, email):
     # SMTP server configuration
     server = smtplib.SMTP("smtp.gmail.com", 587)
     server.starttls()
-    print(f"Logging in with {sender_email} and {sender_password}")
     server.login(sender_email, sender_password)
 
     # Send the email
