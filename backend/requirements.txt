@@ -1,7 +1,7 @@
 flask
 flask_sqlalchemy
 flask_bcrypt
-flask_jwt_extended
+flask_praetorian
 flask_migrate
 flask-cors
 flask-mail

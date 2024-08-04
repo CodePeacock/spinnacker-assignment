@@ -9,7 +9,6 @@ spam_bp = Blueprint("spam", __name__)
 @spam_bp.route("/mark", methods=["POST"])
 def mark_spam():
     data = request.json
-    print(data)
     if user := User.query.get(data["user_id"]):
         spam = Spam(phone_number=data["phone_number"], marked_as_spam_by=user.id)
         db.session.add(spam)

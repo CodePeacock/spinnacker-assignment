@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from flask_praetorian import auth_required
 from models import Contact, User
 from routes import db
 
@@ -6,16 +7,19 @@ contacts_bp = Blueprint("contacts", __name__)
 
 
 @contacts_bp.route("/add", methods=["POST"])
+@auth_required
 def add_contact():
-    data = request.json
-    print(data)
-    if user := User.query.get(data["user_id"]):
-        contact = Contact(
-            name=data["name"], phone_number=data["phone_number"], user_id=user.id
-        )
-        db.session.add(contact)
-        db.session.commit()
-        return jsonify({"message": "Contact added successfully."}), 201
+    try:
+        data = request.json
+        if user := User.query.get(data["user_id"]):
+            contact = Contact(
+                name=data["name"], phone_number=data["phone_number"], user_id=user.id
+            )
+            db.session.add(contact)
+            db.session.commit()
+            return jsonify({"message": "Contact added successfully."}), 201
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
     return jsonify({"message": "User not found."}), 404
 
 

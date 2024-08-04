@@ -21,7 +21,8 @@ const Login = () => {
         e.preventDefault();
         try {
             const response = await loginUser(formData);
-            alert('Login successful');
+            // alert('Login successful');
+            localStorage.setItem('token', response.data.access_token);
             localStorage.setItem('user_id', response.data.user_id);
             navigate('/');
             window.location.reload(); // Reload to update the navbar
