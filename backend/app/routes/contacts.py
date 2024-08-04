@@ -1,5 +1,4 @@
 from flask import Blueprint, jsonify, request
-from flask_praetorian import auth_required
 from models import Contact, User
 from routes import db
 
@@ -7,7 +6,6 @@ contacts_bp = Blueprint("contacts", __name__)
 
 
 @contacts_bp.route("/add", methods=["POST"])
-@auth_required
 def add_contact():
     try:
         data = request.json

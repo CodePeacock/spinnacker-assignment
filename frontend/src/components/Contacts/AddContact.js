@@ -19,7 +19,7 @@ const AddContact = () => {
 
     return (
         <div className='div-container'>
-            <form onSubmit={handleAddContact} className='form'>
+            <form className='form'>
                 <center><h2>Add Contact</h2></center>
                 <input type="text" placeholder="Name" value={contactData.name} onChange={e => setContactData({ ...contactData, name: e.target.value })} />
                 <input type="text" placeholder="Phone Number" value={contactData.phone_number} onChange={e => setContactData({ ...contactData, phone_number: e.target.value })} />

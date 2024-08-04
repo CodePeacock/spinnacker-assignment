@@ -13,6 +13,7 @@ export const listContacts = (userId) => api.get(`/contacts/list/${userId}`);
 export const markSpam = (data) => api.post('/spam/mark', data);
 export const searchByName = (query) => api.get(`/search/by_name?query=${query}`);
 export const searchByPhone = (query) => api.get(`/search/by_phone?query=${query}`);
+export const refreshToken = (data) => api.post('/refreshtoken', data);
 
 export const verifyOtp = async (data) => {
     try {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from '../../services/api';
+import { loginUser, refreshToken } from '../../services/api';
 
 const Login = () => {
     const [formData, setFormData] = useState({
@@ -21,9 +21,11 @@ const Login = () => {
         e.preventDefault();
         try {
             const response = await loginUser(formData);
+            // refreshToken
+            const token = await refreshToken({ refresh_token: response.data.access_token });
             // alert('Login successful');
-            localStorage.setItem('token', response.data.access_token);
-            localStorage.setItem('user_id', response.data.user_id);
+            localStorage.setItem('token', token.access_token);
+            localStorage.setItem('user_id', token.user_id);
             navigate('/');
             window.location.reload(); // Reload to update the navbar
         } catch (error) {

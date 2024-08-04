@@ -63,6 +63,20 @@ def login():
     return jsonify({"message": "Invalid credentials or unverified account."}), 401
 
 
+@auth_bp.route("/refreshtoken", methods=["POST"])
+def refresh():
+    """
+    Refreshes an existing JWT by creating a new one that is a copy of the old
+    except that it has a refrehsed access expiration.
+    """
+    print("refresh request")
+    old_token = request.get_data()
+    new_token = guard.refresh_jwt_token(old_token)
+    user = User.query.filter_by(email=old_token["email"], verified=True).first()
+    ret = {"access_token": new_token, "user_id": user.id}
+    return ret, 200
+
+
 @auth_bp.route("/verify", methods=["POST"])
 def verify():
     data = request.json
@@ -73,19 +87,6 @@ def verify():
         db.session.commit()
         return jsonify({"success": True, "message": "User verified successfully."}), 200
     return jsonify({"success": False, "message": "Invalid OTP."}), 400
-
-
-@auth_bp.route("/api/refresh", methods=["POST"])
-def refresh():
-    """
-    Refreshes an existing JWT by creating a new one that is a copy of the old
-    except that it has a refrehsed access expiration.
-    """
-    print("refresh request")
-    old_token = request.get_data()
-    new_token = guard.refresh_jwt_token(old_token)
-    ret = {"access_token": new_token}
-    return ret, 200
 
 
 def send_otp(email):
