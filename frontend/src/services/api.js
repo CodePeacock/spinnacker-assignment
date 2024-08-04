@@ -26,7 +26,6 @@ export const listContacts = async (user_id) => {
 };
 export const searchByName = (query) => api.get(`/search/by_name?query=${query}`);
 export const searchByPhone = (query) => api.get(`/search/by_phone?query=${query}`);
-export const search = (query) => api.get(`/search_database?query=${query}`);
 export const refreshToken = (data) => api.post('/refreshtoken', data);
 
 export const verifyOtp = async (data) => {

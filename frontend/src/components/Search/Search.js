@@ -1,17 +1,22 @@
 import React, { useState } from 'react';
-import { search } from '../../services/api';
+import { searchByName, searchByPhone } from '../../services/api';
 
 const Search = () => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState([]);
+    const [error, setError] = useState(null);
 
     const handleSearch = async (e) => {
         e.preventDefault();
+        setError(null); // Reset error state
         try {
-            const response = await search(query);
-            setResults(response.data);
+            const [nameResults, phoneResults] = await Promise.all([
+                searchByName(query),
+                searchByPhone(query)
+            ]);
+            setResults([...nameResults.data, ...phoneResults.data]);
         } catch (error) {
-            alert('Error searching');
+            setError('Error searching');
         }
     };
 
@@ -27,6 +32,7 @@ const Search = () => {
                 />
                 <button type="submit" className="search-button">Search</button>
             </form>
+            {error && <p className="error-message">{error}</p>}
             <div className="results-container">
                 {results.map((result) => (
                     <div key={result.phone_number} className="result-card">

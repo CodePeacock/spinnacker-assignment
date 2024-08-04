@@ -1,49 +1,56 @@
 from flask import Blueprint, jsonify, request
 from models import Contact, SpamLikelihood, User
-from sqlalchemy import func, or_
+from sqlalchemy import or_
 
 search_bp = Blueprint("search", __name__)
 
 
-def get_relevance_score(query, name, phone_number):
-    return (
-        func.length(name) - func.length(query),
-        func.length(phone_number) - func.length(query),
-    )
-
-
-@search_bp.route("/search_database", methods=["GET"])
-def search():
-    try:
-        query = request.args.get("query")
-        results = (
-            User.query.filter(
-                or_(
-                    User.name.ilike(f"%{query}%"), User.phone_number.ilike(f"%{query}%")
-                )
-            )
-            .order_by(get_relevance_score(query, User.name, User.phone_number))
-            .all()
-        ) + (
-            Contact.query.filter(
-                or_(
-                    Contact.name.ilike(f"%{query}%"),
-                    Contact.phone_number.ilike(f"%{query}%"),
-                )
-            )
-            .order_by(get_relevance_score(query, Contact.name, Contact.phone_number))
-            .all()
+@search_bp.route("/by_name", methods=["GET"])
+def search_by_name():
+    query = request.args.get("query")
+    results = (
+        User.query.filter(
+            or_(User.name.like(f"{query}%"), User.name.like(f"%{query}%"))
         )
-        combined_results = [
+        .order_by(
+            User.name.like(f"{query}%").desc(), User.name.like(f"%{query}%").desc()
+        )
+        .all()
+    )
+    return jsonify(
+        [
             {
-                "name": r.name,
-                "phone_number": r.phone_number,
-                "spam_likelihood": SpamLikelihood.query.get(r.phone_number).spam_count
-                if SpamLikelihood.query.get(r.phone_number)
+                "name": u.name,
+                "phone_number": u.phone_number,
+                "spam_likelihood": SpamLikelihood.query.get(u.phone_number).spam_count
+                if SpamLikelihood.query.get(u.phone_number)
                 else 0,
             }
-            for r in results
+            for u in results
         ]
-    except Exception as e:
-        return jsonify({"message": str(e)}), 500
-    return jsonify(combined_results), 200
+    ), 200
+
+
+@search_bp.route("/by_phone", methods=["GET"])
+def search_by_phone():
+    query = request.args.get("query")
+    results = (
+        Contact.query.filter(Contact.phone_number.like(f"%{query}%"))
+        .order_by(
+            Contact.phone_number.like(f"{query}%").desc(),
+            Contact.phone_number.like(f"%{query}%").desc(),
+        )
+        .all()
+    )
+    return jsonify(
+        [
+            {
+                "name": c.name,
+                "phone_number": c.phone_number,
+                "spam_likelihood": SpamLikelihood.query.get(c.phone_number).spam_count
+                if SpamLikelihood.query.get(c.phone_number)
+                else 0,
+            }
+            for c in results
+        ]
+    ), 200
