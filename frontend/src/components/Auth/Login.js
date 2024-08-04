@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginUser, refreshToken } from '../../services/api';
+import { loginUser } from '../../services/api';
 
 const Login = () => {
     const [formData, setFormData] = useState({
@@ -21,13 +21,14 @@ const Login = () => {
         e.preventDefault();
         try {
             const response = await loginUser(formData);
-            // refreshToken
-            const token = await refreshToken({ refresh_token: response.data.access_token });
-            // alert('Login successful');
-            localStorage.setItem('token', token.access_token);
-            localStorage.setItem('user_id', token.user_id);
-            navigate('/');
-            window.location.reload(); // Reload to update the navbar
+            if (response.access_token && response.user_id) {
+                localStorage.setItem('token', response.access_token);
+                localStorage.setItem('user_id', response.user_id);
+                navigate('/');
+                window.location.reload(); // Reload to update the navbar
+            } else {
+                alert('Invalid login response');
+            }
         } catch (error) {
             alert('Error logging in');
         }
@@ -37,8 +38,8 @@ const Login = () => {
         <div className='div-container'>
             <form onSubmit={handleSubmit} className='form'>
                 <center><h1>Login Page</h1></center>
-                <input type="email" name="email" placeholder="Email" onChange={handleChange} required className='form input' autoComplete='email' />
-                <input type="password" name="password" placeholder="Password" onChange={handleChange} required className='form input' />
+                <input type="email" name="email" placeholder="Email" onChange={handleChange} required className='form-input' autoComplete='email' />
+                <input type="password" name="password" placeholder="Password" onChange={handleChange} required className='form-input' />
                 <button type="submit" className='form-button'> Login</button>
             </form>
         </div>

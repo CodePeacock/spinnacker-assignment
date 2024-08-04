@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link, Navigate } from 'react-router-dom';
 import Register from './components/Auth/Register';
 import Login from './components/Auth/Login';
 import AddContact from './components/Contacts/AddContact';
@@ -8,10 +8,18 @@ import Search from './components/Search/Search';
 import Navbar from './components/NavBar';
 import './App.css';
 
+
 const Home = () => (
-  <div className="home">
-    <h1>Welcome to My Application</h1>
-    <p>😊This is a simple application to manage your contacts📃</p>
+  <div className="home" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
+    {/* show svg as logo */}
+    <img
+      src="https://www.svgrepo.com/show/169527/phone-book.svg"
+      className='logo rotate'
+      alt="logo"
+      style={{ width: '100px', height: '100px' }}
+    />
+    <h1>Welcome to Contact Application</h1>
+    <b><h2>😊This is a simple application to manage your contacts📃</h2></b>
     <div className="buttons">
       <Link to="/register" className="btn register">Register</Link>
       <Link to="/login" className="btn login">Login</Link>
@@ -38,7 +46,7 @@ const App = () => {
     <Router>
       <Navbar isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={isLoggedIn ? <Navigate to="/contacts" /> : <Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/add-contact" element={<AddContact />} />

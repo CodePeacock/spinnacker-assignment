@@ -16,7 +16,6 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from flask import Blueprint, jsonify, request
-from flask_praetorian import auth_required
 from models import User
 from otp import generate_otp
 from routes import db, guard
@@ -51,16 +50,14 @@ def register():
 
 
 @auth_bp.route("/login", methods=["POST"])
-@auth_required
 def login():
     data = request.json or None
     password = data["password"]
     user = User.query.filter_by(email=data["email"], verified=True).first()
     if user and guard.authenticate(username=data["email"], password=password):
-        return jsonify(
-            {"access_token": guard.encode_jwt_token(user), "user_id": user.id}
-        ), 200
-    return jsonify({"message": "Invalid credentials or unverified account."}), 401
+        access_token = guard.encode_jwt_token(user)
+        return jsonify({"access_token": access_token, "user_id": user.id})
+    return jsonify({"error": "Invalid credentials"}), 401
 
 
 @auth_bp.route("/refreshtoken", methods=["POST"])

@@ -109,11 +109,11 @@ const Register = () => {
                     <input type="password" name="password" placeholder="Password" onChange={handleChange} required pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$" title="Password must be at least 8 characters long and contain a mix of alphanumeric characters." className='form-input' />
                     <input type="text" name="city" placeholder="City" onChange={handleChange} className='form-input' />
                     <input type="text" name="country" placeholder="Country" onChange={handleChange} className='form-input' />
-                    <div className="buttons">
-                        <button type="submit" className='form-button'>Register</button>
-                        <Link to="/login" className='btn redirectlogin'>Already have an account? Login</Link>
-                    </div>
-                </form>}
+                    <button type="submit" className='form-button'>Register</button>
+                    Already have an account? {'   '}
+                    <b><Link to="/login" className='redirectlogin'>Login</Link></b>
+                </form>
+            }
         </div>
     );
 };

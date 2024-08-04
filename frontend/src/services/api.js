@@ -7,12 +7,26 @@ const api = axios.create({
 });
 
 export const registerUser = (data) => api.post('/auth/register', data);
-export const loginUser = (data) => api.post('/auth/login', data);
+export const loginUser = async (data) => {
+    try {
+        const response = await api.post('/auth/login', data);
+        return response.data; // Ensure this contains access_token and user_id
+    } catch (error) {
+        console.error('Error during login:', error);
+        throw error.response ? error.response.data : new Error('Server Error');
+    }
+};
+export const getUserName = (user_id) => api.get(`/contacts/username/${user_id}`);
 export const addContact = (data) => api.post('/contacts/add', data);
-export const listContacts = (userId) => api.get(`/contacts/list/${userId}`);
-export const markSpam = (data) => api.post('/spam/mark', data);
+export const markSpam = async ({ phone_number, user_id, isSpam }) => {
+    return api.post('/spam/mark', { phone_number, user_id, isSpam });
+};
+export const listContacts = async (user_id) => {
+    return api.get(`/contacts/list/${user_id}`);
+};
 export const searchByName = (query) => api.get(`/search/by_name?query=${query}`);
 export const searchByPhone = (query) => api.get(`/search/by_phone?query=${query}`);
+export const search = (query) => api.get(`/search_database?query=${query}`);
 export const refreshToken = (data) => api.post('/refreshtoken', data);
 
 export const verifyOtp = async (data) => {

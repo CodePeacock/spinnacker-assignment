@@ -2,6 +2,7 @@ from models import User
 from routes import create_app, db, guard
 
 if __name__ == "__main__":
+    # Clear the terminal
     app = create_app()
     guard.init_app(app, User)
 

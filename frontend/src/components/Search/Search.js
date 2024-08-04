@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { searchByName, searchByPhone } from '../../services/api';
+import { search } from '../../services/api';
 
 const Search = () => {
     const [query, setQuery] = useState('');
@@ -8,9 +8,8 @@ const Search = () => {
     const handleSearch = async (e) => {
         e.preventDefault();
         try {
-            const nameResults = await searchByName(query);
-            const phoneResults = await searchByPhone(query);
-            setResults([...nameResults.data, ...phoneResults.data]);
+            const response = await search(query);
+            setResults(response.data);
         } catch (error) {
             alert('Error searching');
         }
