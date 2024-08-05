@@ -2,6 +2,8 @@
 This file is used to import all the routes in the app.
 """
 
+import os
+
 import pymysql
 from config import Config
 from flask import Flask
@@ -21,7 +23,11 @@ guard = Praetorian()
 def create_app():
     app = Flask(__name__)
     Mail(app)
-    CORS(app)
+    allowed_origins = os.getenv("ALLOWED_ORIGINS", "*")
+    CORS(
+        app,
+        origins=allowed_origins,
+    )
     app.config.from_object(Config)
 
     db.init_app(app)
