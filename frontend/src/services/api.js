@@ -1,13 +1,20 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-
+// Create an Axios instance
 const api = axios.create({
-    baseURL: API_URL,
+    baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000',
 });
 
-console.log('API_URL:', API_URL);
+// Add a request interceptor
+api.interceptors.request.use(request => {
+    console.log('Sending request:', request);
+    return request;
+}, error => {
+    console.error('Error in request:', error);
+    return Promise.reject(error);
+});
 
+// Function to register a user
 export const registerUser = (data) => {
     console.log('registerUser called with data:', data);
     return api.post('/auth/register', data);
