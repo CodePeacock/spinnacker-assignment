@@ -1,8 +1,9 @@
+import os
+
 from models import User
 from routes import create_app, db, guard
 
 if __name__ == "__main__":
-    # Clear the terminal
     app = create_app()
     guard.init_app(app, User)
 
@@ -10,4 +11,7 @@ if __name__ == "__main__":
     def create_table():
         db.create_all()
 
-    app.run(debug=True)
+    # Check if the environment variable FLASK_ENV is set to 'production'
+    is_production = os.getenv("FLASK_ENV") == "production"
+
+    app.run(debug=not is_production)
