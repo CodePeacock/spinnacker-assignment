@@ -9,5 +9,4 @@ pyclean
 python-dotenv
 pymysql
 mysql-connector-python
-flask-mysqldb
 email-validator
