@@ -32,13 +32,15 @@ const App = () => {
 
   useEffect(() => {
     const user_id = localStorage.getItem('user_id');
-    if (user_id) {
+    const token = localStorage.getItem('token');
+    if (user_id && token) {
       setIsLoggedIn(true);
     }
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('user_id');
+    localStorage.removeItem('token');
     setIsLoggedIn(false);
   };
 

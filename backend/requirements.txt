@@ -4,6 +4,7 @@ flask_bcrypt
 flask_migrate
 flask-cors
 flask-mail
+pyclean
 python-dotenv
 pymysql
 mysql-connector-python

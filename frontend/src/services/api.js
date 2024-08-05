@@ -21,8 +21,8 @@ export const addContact = (data) => api.post('/contacts/add', data);
 export const markSpam = async ({ phone_number, user_id, isSpam }) => {
     return api.post('/spam/mark', { phone_number, user_id, isSpam });
 };
-export const listContacts = async (user_id) => {
-    return api.get(`/contacts/list/${user_id}`);
+export const listContacts = async (user_id, page = 1, per_page = 10) => {
+    return api.get(`/contacts/list/${user_id}?page=${page}&per_page=${per_page}`);
 };
 export const searchByName = (query) => api.get(`/search/by_name?query=${query}`);
 export const searchByPhone = (query) => api.get(`/search/by_phone?query=${query}`);
