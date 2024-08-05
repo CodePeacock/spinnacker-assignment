@@ -14,4 +14,4 @@ if __name__ == "__main__":
     # Check if the environment variable FLASK_ENV is set to 'production'
     is_production = os.getenv("FLASK_ENV") == "production"
 
-    app.run(debug=not is_production)
+    app.run(debug=not is_production, host="0.0.0.0", port=5000)
