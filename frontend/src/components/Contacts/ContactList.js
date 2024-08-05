@@ -5,6 +5,7 @@ const ContactList = () => {
     const [contacts, setContacts] = useState([]);
     const [spam, setSpam] = useState([]);
     const [error, setError] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         const fetchContacts = async () => {
@@ -44,14 +45,34 @@ const ContactList = () => {
         }
     };
 
+    const handleSearch = (event) => {
+        setSearchQuery(event.target.value);
+    };
+
+    const filteredContacts = contacts.filter(contact =>
+        contact.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        contact.phone_number.includes(searchQuery)
+    );
+
     return (
         <div className="contact-list-container">
+            <header className="contact-list-header">
+                <h1>Contact List</h1>
+                <input
+                    type="text"
+                    placeholder="Search contacts..."
+                    value={searchQuery}
+                    onChange={handleSearch}
+                    className="search-input"
+                />
+            </header>
+            <br />
             {error && <p className="error-message">{error}</p>}
             {contacts.length === 0 ? (
                 <p>No contacts found.</p>
             ) : (
                 <div className="contact-cards">
-                    {contacts.map((contact) => (
+                    {filteredContacts.map((contact) => (
                         <div key={contact.phone_number} className="contact-card">
                             <h3>{contact.name}</h3>
                             <p>{contact.phone_number}</p>
@@ -64,6 +85,9 @@ const ContactList = () => {
                     ))}
                 </div>
             )}
+            <footer className="contact-list-footer">
+                <b><p>&copy; 2024 Contact List App</p></b>
+            </footer>
         </div>
     );
 };
