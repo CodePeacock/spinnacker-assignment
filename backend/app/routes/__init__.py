@@ -2,6 +2,7 @@
 This file is used to import all the routes in the app.
 """
 
+import pymysql
 from config import Config
 from flask import Flask
 from flask_cors import CORS
@@ -9,6 +10,8 @@ from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_praetorian import Praetorian
 from flask_sqlalchemy import SQLAlchemy
+
+pymysql.install_as_MySQLdb()
 
 db = SQLAlchemy()
 migrate = Migrate()

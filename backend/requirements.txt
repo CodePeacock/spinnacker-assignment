@@ -7,4 +7,6 @@ flask-cors
 flask-mail
 pyclean
 python-dotenv
+pymysql
+mysql-connector-python
 email-validator
