@@ -8,7 +8,6 @@ flask-mail
 pyclean
 python-dotenv
 pymysql
-mysqlclient
 mysql-connector-python
 flask-mysqldb
 email-validator
