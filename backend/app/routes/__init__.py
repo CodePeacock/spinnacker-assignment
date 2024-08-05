@@ -24,10 +24,7 @@ def create_app():
     app = Flask(__name__)
     Mail(app)
     allowed_origins = os.getenv("ALLOWED_ORIGINS", "*")
-    CORS(
-        app,
-        origins=allowed_origins,
-    )
+    CORS(app, resources={r"/*": {"origins": allowed_origins.split(",")}})
     app.config.from_object(Config)
 
     db.init_app(app)
