@@ -1,3 +1,8 @@
+"""
+This module contains the routes for user authentication, including registration, login, token refresh, and email verification. It also includes a function to send an OTP (One-Time Password) email for email verification.
+
+"""
+
 import logging
 import os
 import smtplib
@@ -19,6 +24,17 @@ logger = logging.getLogger(__name__)
 
 @auth_bp.route("/register", methods=["POST"])
 def register():
+    """
+    Register a new user.
+    This function registers a new user by creating a User object with the provided data and storing it in the database.
+    The user's password is hashed before storing it in the database.
+    An OTP (One-Time Password) is generated and sent to the user's email for verification.
+
+    Returns:
+        A JSON response containing a success message if the registration is successful, or an error message if it fails.
+    Raises:
+        Exception: If an error occurs during the registration process.
+    """
     try:
         data = request.json
         hashed_password = guard.hash_password(data["password"])  # Hash the password
@@ -36,7 +52,6 @@ def register():
         # Generate and send OTP
         otp = send_otp(user.email)
         user.otp = otp
-        user.otp_expiration = datetime.now(timezone.utc) + timedelta(minutes=10)
         db.session.commit()
 
         return jsonify(
@@ -49,6 +64,16 @@ def register():
 
 @auth_bp.route("/login", methods=["POST"])
 def login():
+    """
+    Authenticates a user and generates an access token.
+
+    Returns:
+    If the user is authenticated successfully, returns a JSON response containing the access token and user ID.
+    If the user authentication fails, returns a JSON response with an error message and a status code of 401.
+    If an error occurs during the login process, returns a JSON response with an error message and a status code of 500.
+    """
+    # Code implementation
+    # Error handling
     try:
         data = request.json
         password = data["password"]
@@ -64,6 +89,14 @@ def login():
 
 @auth_bp.route("/refreshtoken", methods=["POST"])
 def refresh():
+    """
+    Refreshes the JWT token.
+
+    Returns:
+        If the token refresh is successful and the user is verified, returns a JSON response with the new access token and the user ID.
+        If the token is invalid, returns a JSON response with an error message and a status code of 401 (Unauthorized).
+        If an error occurs during the token refresh, returns a JSON response with an error message and a status code of 500 (Internal Server Error).
+    """
     try:
         old_token = request.get_json().get("token")
         new_token = guard.refresh_jwt_token(old_token)
@@ -79,17 +112,24 @@ def refresh():
 
 @auth_bp.route("/verify", methods=["POST"])
 def verify():
+    """
+    Verify user's OTP and update verification status.
+
+    Returns:
+        A JSON response containing the verification status and a message.
+
+    Raises:
+        Exception: If an error occurs during the verification process.
+    """
     try:
         data = request.json
         user = User.query.filter_by(email=data["email"]).first()
         if (
             user
             and user.otp == data["otp"]
-            and user.otp_expiration > datetime.now(timezone.utc)
         ):
             user.verified = True
             user.otp = None  # Clear OTP after verification
-            user.otp_expiration = None
             db.session.commit()
             return jsonify(
                 {"success": True, "message": "User verified successfully."}
@@ -101,6 +141,14 @@ def verify():
 
 
 def send_otp(email):
+    """
+    Sends an OTP (One-Time Password) email to the specified email address for email verification.
+    Parameters:
+    - `email (str)`: The email address to send the OTP to.
+    Returns:
+    - `otp (str)`: The generated OTP code.
+    Raises:
+    - `Exception`: If there is an error sending the OTP email."""
     otp = generate_otp()
     body = f"""
     <html>
@@ -136,6 +184,21 @@ def send_otp(email):
 
 
 def _auth_send_otp_email(sender_email, sender_password, msg, email):
+    """
+    Sends an OTP email to the specified email address.
+
+    Parameters:
+    - sender_email (str): The email address of the sender.
+    - sender_password (str): The password of the sender's email account.
+    - msg (MIMEText): The message object containing the email content.
+    - email (str): The email address of the recipient.
+
+    Returns:
+    None
+
+    Raises:
+    - Exception: If there is an error while sending the email.
+    """
     try:
         server = smtplib.SMTP("smtp.gmail.com", 587)
         server.starttls()

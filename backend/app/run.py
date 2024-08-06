@@ -1,3 +1,5 @@
+"""This file is the entry point of the application. It creates the Flask app, initializes the Flask-JWT-Extended extension, and runs the app."""
+
 import os
 
 from flask_cors import CORS

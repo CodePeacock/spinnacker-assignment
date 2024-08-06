@@ -1,3 +1,7 @@
+"""
+This module contains the routes for marking phone numbers as spam.
+"""
+
 import logging
 
 from flask import Blueprint, jsonify, request
@@ -11,6 +15,12 @@ spam_bp = Blueprint("spam", __name__)
 
 @spam_bp.route("/mark", methods=["POST"])
 def mark_spam():
+    """
+    Marks or unmarks a phone number as spam for a given user.
+    Returns:
+        If successful, returns a JSON response containing the updated list of spam phone numbers.
+        If an error occurs, returns a JSON response with an error message.
+    """
     try:
         data = request.json
         user_id = data["user_id"]
@@ -41,6 +51,16 @@ def mark_spam():
 
 
 def mark_as_spam(user_id, phone_number):
+    """
+    Marks a phone number as spam and updates the spam count.
+
+    Parameters:
+    - user_id (int): The ID of the user marking the phone number as spam.
+    - phone_number (str): The phone number to be marked as spam.
+
+    Returns:
+    None
+    """
     spam = Spam(phone_number=phone_number, marked_as_spam_by=user_id)
     db.session.add(spam)
     likelihood = SpamLikelihood.query.get(phone_number)
@@ -52,6 +72,16 @@ def mark_as_spam(user_id, phone_number):
 
 
 def unmark_as_spam(user_id, phone_number):
+    """
+    Remove the spam mark from a phone number for a specific user.
+
+    Args:
+        user_id (int): The ID of the user who marked the phone number as spam.
+        phone_number (str): The phone number to be unmarked.
+
+    Returns:
+        None
+    """
     Spam.query.filter_by(phone_number=phone_number, marked_as_spam_by=user_id).delete()
     likelihood = SpamLikelihood.query.get(phone_number)
     if likelihood and likelihood.spam_count > 0:

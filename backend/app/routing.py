@@ -1,3 +1,5 @@
+"""This module contains the routing logic for the application. It defines the main blueprint and registers the other blueprints."""
+
 import logging
 
 from flask import Blueprint, jsonify
@@ -20,6 +22,12 @@ logger = logging.getLogger(__name__)
 
 @main_bp.route("/")
 def index():
+    """
+    This function handles the index route.
+
+    Returns:
+        str: A welcome message for the Contact Management API.
+    """
     logger.info("Index route accessed")
     return "Welcome to the Contact Management API"
 
@@ -34,6 +42,23 @@ main_bp.register_blueprint(search_bp, url_prefix="/search")
 # Centralized error handler
 @main_bp.errorhandler(Exception)
 def handle_exception(e):
+    """
+    Handles exceptions and returns a JSON response with an error message.
+
+    Args:
+        e (Exception): The exception that occurred.
+
+    Returns:
+        tuple: A tuple containing a JSON response and a status code.
+
+    Example:
+
+        >>> handle_exception(ValueError("Invalid input"))
+        ({
+            "error": "Invalid input",
+            "message": "An internal error occurred. Please try again later."
+        }, 500)
+    """
     logger.error(f"An error occurred: {e}")
     response = {
         "error": str(e),

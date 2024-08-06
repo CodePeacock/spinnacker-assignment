@@ -1,3 +1,5 @@
+"""This module contains the routes for searching contacts by name or phone number."""
+
 import logging
 
 from flask import Blueprint, jsonify, request

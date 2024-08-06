@@ -14,6 +14,12 @@ guard = Praetorian()
 
 
 def create_app():
+    """
+    Creates and configures the Flask application.
+
+    Returns:
+        `Flask`: The configured Flask application.
+    """
     app = Flask(__name__)
     Mail(app)
 

@@ -1,3 +1,7 @@
+"""
+This module contains the models for the application that are used to interact with the database.
+"""
+
 from routes import db
 
 
