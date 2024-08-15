@@ -6,8 +6,8 @@ from flask_cors import CORS
 from models import User
 from routes import create_app, db, guard
 
-app = create_app()
 if __name__ == "__main__":
+    app = create_app()
     guard.init_app(app, User)
 
     @app.before_request
@@ -20,4 +20,4 @@ if __name__ == "__main__":
     allowed_origins = os.getenv("ALLOWED_ORIGINS", "*")
     CORS(app, resources={r"/*": {"origins": allowed_origins.split(",")}})
 
-    app.run(debug=not environment_type, host="0.0.0.0", port=5000)
+    app.run(debug=not environment_type, host="0.0.0.0", port=5000, threaded=True)

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { listContacts, markSpam, deleteContact, addContact } from '../../services/api';
 import { toast } from 'react-toastify';
+import RequireAuth from '../Auth/RequireAuth';
 
 const ContactList = () => {
     const [contacts, setContacts] = useState([]);
@@ -54,9 +55,10 @@ const ContactList = () => {
             await deleteContact(contact_id);
             setContacts(prevContacts => prevContacts.filter(contact => contact.id !== contact_id));
             setDeletedContact(contactToDelete);
-            toast.success('Contact deleted. Undo?', {
+            toast.success('Contact deleted. Click me to Undo?', {
                 onClick: () => handleUndoDelete(contactToDelete),
                 autoClose: 5000,
+                style: { cursor: 'pointer', fontWeight: 'bold' }
             });
         } catch (error) {
             setError('Error deleting contact');
@@ -85,45 +87,47 @@ const ContactList = () => {
     );
 
     return (
-        <div className="contact-list-container">
-            <header className="contact-list-header">
-                <h1>Contact List</h1>
-                <input
-                    type="text"
-                    placeholder="Search contacts..."
-                    value={searchQuery}
-                    onChange={handleSearch}
-                    className="search-input"
-                />
-            </header>
-            <br />
-            {error && <p className="error-message">{error}</p>}
-            {contacts.length === 0 ? (
-                <p>No contacts found.</p>
-            ) : (
-                <div className="contact-cards">
-                    {filteredContacts.map((contact) => (
-                        <div key={contact.phone_number} className="contact-card">
-                            <h3>{contact.name}</h3>
-                            <p>{contact.phone_number}</p>
-                            <button
-                                className={`spam-button ${spam.includes(contact.phone_number) ? 'not-spam' : 'spam'}`}
-                                onClick={() => handleMarkSpam(contact.phone_number, !spam.includes(contact.phone_number))}>
-                                {spam.includes(contact.phone_number) ? 'Mark as Not Spam' : 'Mark as Spam'}
-                            </button>
-                            <button
-                                className="delete-button"
-                                onClick={() => handleDeleteContact(contact.id)}>
-                                Delete
-                            </button>
-                        </div>
-                    ))}
-                </div>
-            )}
-            <footer className="contact-list-footer">
-                <b><p>&copy; 2024 Contact List App</p></b>
-            </footer>
-        </div>
+        <RequireAuth>
+            <div className="contact-list-container">
+                <header className="contact-list-header">
+                    <h1>Contact List</h1>
+                    <input
+                        type="text"
+                        placeholder="Search contacts..."
+                        value={searchQuery}
+                        onChange={handleSearch}
+                        className="search-input"
+                    />
+                </header>
+                <br />
+                {error && <p className="error-message">{error}</p>}
+                {contacts.length === 0 ? (
+                    <p>No contacts found.</p>
+                ) : (
+                    <div className="contact-cards">
+                        {filteredContacts.map((contact) => (
+                            <div key={contact.phone_number} className="contact-card">
+                                <h3>{contact.name}</h3>
+                                <p>{contact.phone_number}</p>
+                                <button
+                                    className={`spam-button ${spam.includes(contact.phone_number) ? 'not-spam' : 'spam'}`}
+                                    onClick={() => handleMarkSpam(contact.phone_number, !spam.includes(contact.phone_number))}>
+                                    {spam.includes(contact.phone_number) ? 'Mark as Not Spam' : 'Mark as Spam'}
+                                </button>
+                                <button
+                                    className="delete-button"
+                                    onClick={() => handleDeleteContact(contact.id)}>
+                                    ❌
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+                <footer className="contact-list-footer">
+                    <b><p>&copy; 2024 Contact List App</p></b>
+                </footer>
+            </div>
+        </RequireAuth>
     );
 };
 

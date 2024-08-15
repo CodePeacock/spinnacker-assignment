@@ -2,6 +2,11 @@
 
 import os
 
+# load the environment variables using python-dotenv
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path="backend/.env")
+
 
 class Config:
     """
@@ -21,8 +26,8 @@ class Config:
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.getenv("SECRET_KEY", "mysecretkey")
-    JWT_ACCESS_LIFESPAN = {"hours": 24}
-    JWT_REFRESH_LIFESPAN = {"days": 30}
+    JWT_ACCESS_LIFESPAN = {"hours": 2}
+    JWT_REFRESH_LIFESPAN = {"hours": 2}
     SQLALCHEMY_ENGINE_OPTIONS = {
         "pool_size": 10,
         "pool_timeout": 30,

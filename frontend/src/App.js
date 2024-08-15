@@ -7,13 +7,12 @@ import Login from './components/Auth/Login';
 import AddContact from './components/Contacts/AddContact';
 import ContactList from './components/Contacts/ContactList';
 import Search from './components/Search/Search';
+import RequireAuth from './components/Auth/RequireAuth';
 import Navbar from './components/NavBar';
 import './App.css';
 
-
 const Home = () => (
   <div className="home" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
-    {/* show svg as logo */}
     <img
       src="https://www.svgrepo.com/show/169527/phone-book.svg"
       className='logo rotate'
@@ -53,9 +52,9 @@ const App = () => {
         <Route path="/" element={isLoggedIn ? <Navigate to="/contacts" /> : <Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/add-contact" element={<AddContact />} />
-        <Route path="/contacts" element={<ContactList />} />
-        <Route path="/search" element={<Search />} />
+        <Route path="/add-contact" element={<RequireAuth><AddContact /></RequireAuth>} />
+        <Route path="/contacts" element={<RequireAuth><ContactList /></RequireAuth>} />
+        <Route path="/search" element={<RequireAuth><Search /></RequireAuth>} />
       </Routes>
       <ToastContainer stacked />
     </Router>
