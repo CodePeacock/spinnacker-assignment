@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../../services/api';
+import { toast } from 'react-toastify';
 
 const Login = () => {
     const [formData, setFormData] = useState({
@@ -22,15 +23,15 @@ const Login = () => {
         try {
             const response = await loginUser(formData);
             if (response.access_token && response.user_id) {
-                localStorage.setItem('token', response.access_token);
-                localStorage.setItem('user_id', response.user_id);
+                sessionStorage.setItem('token', response.access_token);
+                sessionStorage.setItem('user_id', response.user_id);
                 navigate('/');
                 window.location.reload(); // Reload to update the navbar
             } else {
-                alert('Invalid login response');
+                toast.error('Invalid login response');
             }
         } catch (error) {
-            alert('Error logging in');
+            toast.error('Error logging in');
         }
     };
 

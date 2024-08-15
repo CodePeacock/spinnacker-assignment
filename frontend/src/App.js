@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link, Navigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import '../node_modules/react-toastify/dist/ReactToastify.css';
 import Register from './components/Auth/Register';
 import Login from './components/Auth/Login';
 import AddContact from './components/Contacts/AddContact';
@@ -31,16 +33,16 @@ const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const user_id = localStorage.getItem('user_id');
-    const token = localStorage.getItem('token');
+    const user_id = sessionStorage.getItem('user_id');
+    const token = sessionStorage.getItem('token');
     if (user_id && token) {
       setIsLoggedIn(true);
     }
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('user_id');
-    localStorage.removeItem('token');
+    sessionStorage.removeItem('user_id');
+    sessionStorage.removeItem('token');
     setIsLoggedIn(false);
   };
 
@@ -55,6 +57,7 @@ const App = () => {
         <Route path="/contacts" element={<ContactList />} />
         <Route path="/search" element={<Search />} />
       </Routes>
+      <ToastContainer stacked />
     </Router>
   );
 };

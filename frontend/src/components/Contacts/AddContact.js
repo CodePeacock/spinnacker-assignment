@@ -1,27 +1,40 @@
 import React, { useState } from 'react';
 import { addContact } from '../../services/api';
+import { toast } from 'react-toastify';
 
 const AddContact = () => {
     const [contactData, setContactData] = useState({
         name: '',
         phone_number: ''
     });
+    const [note, setNote] = useState('');
 
     const handleAddContact = async (e) => {
         e.preventDefault(); // Prevent form submission
         try {
-            const user_id = localStorage.getItem('user_id');
-            // get name of user from database using user_id
+            const user_id = sessionStorage.getItem('user_id');
             const response = await addContact({ ...contactData, user_id });
-            alert(response.data.message);
+            if (response.status === 201) {
+                setContactData({
+                    name: '',
+                    phone_number: ''
+                });
+            }
+            toast.success(String(response.data.message), { icon: <span role="img" aria-label="rocket">🚀</span> });
+            if (response.data.message.includes('This user is added by someone already')) {
+                setNote('This user is added by someone already');
+            } else {
+                setNote('');
+            }
         } catch (error) {
             if (error.response) {
-                alert(error.response.data.message);
+                toast.error(String(error.response.data.message), { icon: <span role="img" aria-label="sad">😥</span> });
             } else {
-                alert('An error occurred');
+                toast.error('An error occurred');
             }
         }
     };
+
     return (
         <div className='div-container'>
             <form className='form'>
@@ -29,10 +42,10 @@ const AddContact = () => {
                 <input type="text" placeholder="Name" value={contactData.name} onChange={e => setContactData({ ...contactData, name: e.target.value })} required />
                 <input type="text" placeholder="Phone Number" value={contactData.phone_number} onChange={e => setContactData({ ...contactData, phone_number: e.target.value })} required />
                 <center><button onClick={handleAddContact}>Add Contact</button></center>
+                {note && <p>{note}</p>}
             </form>
         </div>
     );
 };
 
 export default AddContact;
-

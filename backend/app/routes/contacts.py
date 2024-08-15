@@ -24,6 +24,7 @@ def add_contact():
 
     - A JSON response containing a success message and status code 201 if the contact is added successfully.
     - A JSON response containing an error message and status code 404 if the user is not found.
+    - A JSON response containing an error message and status code 409 if the contact already exists for the user.
     - A JSON response containing an error message and status code 500 if an error occurs while adding the contact.
     """
     try:
@@ -32,12 +33,30 @@ def add_contact():
         if not user:
             return jsonify({"message": "User not found."}), 404
 
+        # Check if the contact already exists for the user
+        existing_contact = Contact.query.filter_by(
+            user_id=user.id, phone_number=data["phone_number"]
+        ).first()
+        if existing_contact:
+            return jsonify({"message": "Contact already exists for this user."}), 409
+
+        # Check if the contact is added by someone else
+        other_user_contact = Contact.query.filter_by(
+            phone_number=data["phone_number"]
+        ).first()
+        contact_added_by_other = other_user_contact is not None
+
         contact = Contact(
             name=data["name"], phone_number=data["phone_number"], user_id=user.id
         )
         db.session.add(contact)
         db.session.commit()
-        return jsonify({"message": "Contact added successfully."}), 201
+
+        response_message = "Contact added successfully."
+        if contact_added_by_other:
+            response_message += " This user is added by someone already."
+
+        return jsonify({"message": response_message}), 201
     except Exception as e:
         logger.error(f"Error adding contact: {e}")
         return jsonify({"message": "An error occurred while adding the contact."}), 500
@@ -101,6 +120,7 @@ def list_contacts(user_id):
         ]
         contact_list = [
             {
+                "id": c.id,
                 "name": c.name,
                 "phone_number": c.phone_number,
                 "is_spam": c.phone_number in spam_numbers,
@@ -112,4 +132,33 @@ def list_contacts(user_id):
         logger.error(f"Error listing contacts: {e}")
         return jsonify(
             {"message": "An error occurred while listing the contacts."}
+        ), 500
+
+
+@contacts_bp.route("/delete/<int:contact_id>", methods=["DELETE"])
+def delete_contact(contact_id):
+    """
+    Deletes a contact from the database.
+
+    Args:
+        contact_id (int): The ID of the contact to be deleted.
+
+    Returns:
+        A JSON response containing a success message and status code 200 if the contact is deleted successfully.
+        A JSON response containing an error message and status code 404 if the contact is not found.
+        A JSON response containing an error message and status code 500 if an error occurs while deleting the contact.
+    """
+    try:
+        contact = Contact.query.get(contact_id)
+        if not contact:
+            return jsonify({"message": "Contact not found."}), 404
+
+        db.session.delete(contact)
+        db.session.commit()
+        return jsonify({"message": "Contact deleted successfully."}), 200
+    except Exception as e:
+        logger.error(f"Error deleting contact: {e}")
+        db.session.rollback()
+        return jsonify(
+            {"message": "An error occurred while deleting the contact."}
         ), 500

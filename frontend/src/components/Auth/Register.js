@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { registerUser, verifyOtp } from '../../services/api'; // Assuming these are the API calls
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const Register = () => {
     const [otp, setOtp] = useState('');
@@ -26,20 +27,20 @@ const Register = () => {
         try {
             e.preventDefault();
             if (otp.length !== 6) {
-                alert('Invalid OTP. Please enter a 6-digit OTP.');
+                toast.error('Invalid OTP. Please enter a 6-digit OTP.');
                 return;
             }
 
             const response = await verifyOtp({ email: formData.email, otp });
             if (response.success) {
-                alert('OTP verified successfully.');
+                toast.success('OTP verified successfully.');
                 navigate('/login'); // Redirect to login page on success
             } else {
-                alert('Invalid OTP. Please enter the correct OTP.');
+                toast.error('Invalid OTP. Please enter the correct OTP.');
             }
         } catch (error) {
             console.error('Error during OTP verification:', error);
-            alert('An error occurred. Please try again.');
+            toast.error('An error occurred. Please try again.');
         }
     };
     const validatePhoneNumber = (phoneNumber) => {
@@ -61,26 +62,26 @@ const Register = () => {
         e.preventDefault();
         try {
             if (!validatePhoneNumber(formData.phone_number)) {
-                alert('Invalid phone number. Please enter a valid 10-digit phone number.');
+                toast.error('Invalid phone number. Please enter a valid 10-digit phone number.');
                 return;
             }
 
             if (!validateEmail(formData.email)) {
-                alert('Invalid email. Please enter a valid email address.');
+                toast.error('Invalid email. Please enter a valid email address.');
                 return;
             }
 
             if (!validatePassword(formData.password)) {
-                alert('Invalid password. Password must be at least 8 characters long and contain a mix of alphanumeric characters.');
+                toast.error('Invalid password. Password must be at least 8 characters long and contain a mix of alphanumeric characters.');
                 return;
             }
 
             const response = await registerUser(formData);
             setIsRegistered(true);
-            alert(response.message || 'User registered successfully. Please verify your email.');
+            toast.success(response.message || 'User registered successfully. Please verify your email.');
         } catch (error) {
             console.error('Registration Error:', error);
-            alert('Error registering user');
+            console.error('Error registering user');
         }
     };
 

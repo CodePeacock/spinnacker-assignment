@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { listContacts, markSpam } from '../../services/api';
+import { listContacts, markSpam, deleteContact, addContact } from '../../services/api';
+import { toast } from 'react-toastify';
 
 const ContactList = () => {
     const [contacts, setContacts] = useState([]);
     const [spam, setSpam] = useState([]);
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
+    const [deletedContact, setDeletedContact] = useState(null);
 
     useEffect(() => {
         const fetchContacts = async () => {
             try {
-                const user_id = localStorage.getItem('user_id');
+                const user_id = sessionStorage.getItem('user_id');
                 if (!user_id) {
                     return;
                 }
@@ -20,6 +22,7 @@ const ContactList = () => {
                     setContacts([]);
                     setSpam([]);
                 } else {
+                    console.log('response.data:', response.data);
                     setContacts(response.data);
                     const spamContacts = response.data.filter(contact => contact.is_spam).map(contact => contact.phone_number);
                     setSpam(spamContacts);
@@ -33,7 +36,7 @@ const ContactList = () => {
 
     const handleMarkSpam = async (phone_number, isSpam) => {
         try {
-            const user_id = localStorage.getItem('user_id');
+            const user_id = sessionStorage.getItem('user_id');
             await markSpam({ phone_number, user_id, isSpam });
             if (isSpam) {
                 setSpam(prevSpam => [...prevSpam, phone_number]);
@@ -42,6 +45,33 @@ const ContactList = () => {
             }
         } catch (error) {
             setError('Error marking spam');
+        }
+    };
+
+    const handleDeleteContact = async (contact_id) => {
+        try {
+            const contactToDelete = contacts.find(contact => contact.id === contact_id);
+            await deleteContact(contact_id);
+            setContacts(prevContacts => prevContacts.filter(contact => contact.id !== contact_id));
+            setDeletedContact(contactToDelete);
+            toast.success('Contact deleted. Undo?', {
+                onClick: () => handleUndoDelete(contactToDelete),
+                autoClose: 5000,
+            });
+        } catch (error) {
+            setError('Error deleting contact');
+        }
+    };
+
+    const handleUndoDelete = async (contact) => {
+        try {
+            const user_id = sessionStorage.getItem('user_id');
+            await addContact({ ...contact, user_id });
+            setContacts(prevContacts => [...prevContacts, contact]);
+            setDeletedContact(null);
+            toast.success('Contact restored');
+        } catch (error) {
+            setError('Error restoring contact');
         }
     };
 
@@ -80,6 +110,11 @@ const ContactList = () => {
                                 className={`spam-button ${spam.includes(contact.phone_number) ? 'not-spam' : 'spam'}`}
                                 onClick={() => handleMarkSpam(contact.phone_number, !spam.includes(contact.phone_number))}>
                                 {spam.includes(contact.phone_number) ? 'Mark as Not Spam' : 'Mark as Spam'}
+                            </button>
+                            <button
+                                className="delete-button"
+                                onClick={() => handleDeleteContact(contact.id)}>
+                                Delete
                             </button>
                         </div>
                     ))}

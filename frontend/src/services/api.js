@@ -79,4 +79,9 @@ export const verifyOtp = async (data) => {
     }
 };
 
+export const deleteContact = (contact_id) => {
+    console.log('deleteContact called with contact_id:', contact_id);
+    return api.delete(`/contacts/delete/${contact_id}`);
+};
+
 

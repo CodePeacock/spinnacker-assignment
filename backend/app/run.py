@@ -15,9 +15,9 @@ if __name__ == "__main__":
         db.create_all()
 
     # Check if the environment variable FLASK_ENV is set to 'production'
-    is_production = os.getenv("FLASK_ENV") == "production"
+    environment_type = os.getenv("FLASK_ENV") == "production"
 
     allowed_origins = os.getenv("ALLOWED_ORIGINS", "*")
     CORS(app, resources={r"/*": {"origins": allowed_origins.split(",")}})
 
-    app.run(debug=not is_production, host="0.0.0.0", port=5000)
+    app.run(debug=not environment_type, host="0.0.0.0", port=5000)
