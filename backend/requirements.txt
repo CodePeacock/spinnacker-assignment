@@ -2,6 +2,7 @@ flask
 flask_sqlalchemy
 flask_bcrypt
 flask_migrate
+cryptography
 flask_praetorian
 flask-cors
 flask-mail
@@ -10,3 +11,4 @@ python-dotenv
 pymysql
 mysql-connector-python
 email-validator
+waitress

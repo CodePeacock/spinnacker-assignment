@@ -6,8 +6,8 @@ from flask_cors import CORS
 from models import User
 from routes import create_app, db, guard
 
+app = create_app()
 if __name__ == "__main__":
-    app = create_app()
     guard.init_app(app, User)
 
     @app.before_request
