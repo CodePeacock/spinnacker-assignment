@@ -8,7 +8,7 @@ const ContactList = () => {
     const [spam, setSpam] = useState([]);
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
-    const [deletedContact, setDeletedContact] = useState(null);
+    const [, setDeletedContact] = useState(null);
 
     useEffect(() => {
         const fetchContacts = async () => {
